@@ -151,7 +151,7 @@ From there, you can choose a time window to recover from.
 For a more granular recovery - for example, if you know the exact timestamp that you want to recover from - you can click the options menu on any message from the endpoint page. From there, you can click "Replay..." and choose to "Replay all failed messages since this time."
 
 ## IP Whitelist
-In case your webhook receiving endpoint is behind a firewall or NAT, you may need to allow traffic from Svix's IP addresses.
+In case your webhook receiving endpoint is behind a firewall or NAT, you may need to allow traffic from [Svix's IP addresses](https://docs.svix.com/receiving/source-ips).
 
 This is the full list of IP addresses that webhooks may originate from grouped by the region of the sender:
 
