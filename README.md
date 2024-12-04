@@ -7,7 +7,7 @@
 Webhooks allow services to notify each other of events. At their core, they are simply `POST` requests sent to a pre-determined endpoint. You can define your own endpoints in our web application and configure different endpoints for various combinations of *event types*. 
 
 <br/><br/><p align="center">
-  <img src="img/sequence.png" width="550px"/>
+  <img src="img/sequence.png" width="450px"/>
 </p><br/><br/>
 
 OptiPick supports the following event types:
