@@ -34,7 +34,7 @@ On the webhooks dashboard, you'll see the "Endpoints" page.
 
 ![](/img/new_endpoint.png)
 
-Click the "Add Endpoint" button to create a new endpoint. For production, you should deploy your endpoint to a domain or IP accessible by our [webhook workers](https://docs.optioryx.com/optipick-webhooks). For debugging, you can use the [Svix CLI](https://github.com/svix/svix-cli?tab=readme-ov-file#installation) to forward a temporary "playground" endpoint to your localhost. 
+Click the "Add Endpoint" button to create a new endpoint. For production, you should deploy your endpoint to a domain or IP accessible by our [webhook workers](#ip-whitelist). For debugging, you can use the [Svix CLI](https://github.com/svix/svix-cli?tab=readme-ov-file#installation) to forward a temporary "playground" endpoint to your localhost. 
 
 After installing the CLI, start your Flask application with:
 
