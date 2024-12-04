@@ -3,57 +3,78 @@
 </p><br/><br/>
 
 # Introduction to OptiPick Webhooks
-Webhooks are how services notify each other of events. At their core they are just a  `POST`  request to a pre-determined endpoint. The endpoint can be whatever you want, and you can just add your own in our web application. You can configure different endpoints for different combinations *event types*. OptiPick provides the following event types
-- `route.optimized`: Triggered when a request to our routing API completes for **any** of your operational warehouses
-- `cluster.optimized`: Triggered when a request to our clustering API completes for **any** of your operational warehouses
-- `route.optimized.{warehouse name}.{your user id}`: Triggered when a request to our routing API completes for `{warehouse name}`
-- `cluster.optimized.{warehouse name}.{your user id}`: Triggered when a request to our clustering API completes for `{warehouse name}`
 
-Once subscribed to one or more types, your endpoint receives small messages whenever the chosen events occur. This message contains the `ID` of the completed request, which you can use to fetch further details from our REST API.
+Webhooks allow services to notify each other of events. At their core, they are simply `POST` requests sent to a pre-determined endpoint. You can define your own endpoints in our web application and configure different endpoints for various combinations of *event types*. 
 
-This minimal Flask application serves as an illustration of what your webhook endpoint has to do. For incoming `cluster.optimized.{warehouse name}.{your user id}` events, this endpoint verifies the payload using the request headers and your endpoint ***secret***. We also illustrate how to use our REST API to gather the optimization's details.
+OptiPick supports the following event types:
 
-## Setting up webhooks 
-To set up webhooks, you will need to navigate to the ***Webhook Dashboard***, which is accessible through ***Settings*** in the [webapp](https://optipick.optioryx.com/settings).
+- **`route.optimized`**: Triggered when a request to our routing API completes for **any** of your operational warehouses.
+- **`cluster.optimized`**: Triggered when a request to our clustering API completes for **any** of your operational warehouses.
+- **`route.optimized.{warehouse name}.{your user id}`**: Triggered when a request to our routing API completes for a specific `{warehouse name}`.
+- **`cluster.optimized.{warehouse name}.{your user id}`**: Triggered when a request to our clustering API completes for a specific `{warehouse name}`.
+
+Once subscribed to one or more types, your endpoint receives small messages whenever the chosen events occur. These messages include the `ID` of the completed request, which can be used to fetch further details from our REST API.
+
+This minimal Flask application demonstrates how your webhook endpoint should process events. For incoming `cluster.optimized.{warehouse name}.{your user id}` events, the example verifies the payload using request headers and your endpoint's ***secret***. Additionally, it showcases how to use our REST API to retrieve optimization details.
+
+## Setting Up Webhooks 
+
+To set up webhooks, navigate to the ***Webhook Dashboard*** under ***Settings*** in the [web application](https://optipick.optioryx.com/settings).
 
 ![](/img/webhooks.png)
 
-In the webhooks dashboard, you will be greeted with the endpoints page.
+On the webhooks dashboard, you'll see the "Endpoints" page.
 
 ![](/img/new_endpoint.png)
 
-You can click the "Add Endpoint" button to add your new endpoint. In production, you will deploy your endpoint to a domain or IP that is accessible [by our webhook workers](https://docs.optioryx.com/optipick-webhooks), but for debugging, you can use the [Svix CLI](https://github.com/svix/svix-cli?tab=readme-ov-file#installation) to forward a "playground" endpoint to your localhost. After installing the CLI, we start our Flask application:
-```
+Click the "Add Endpoint" button to create a new endpoint. For production, you should deploy your endpoint to a domain or IP accessible by our [webhook workers](https://docs.optioryx.com/optipick-webhooks). For debugging, you can use the [Svix CLI](https://github.com/svix/svix-cli?tab=readme-ov-file#installation) to forward a temporary "playground" endpoint to your localhost. 
+
+After installing the CLI, start your Flask application with:
+
+```bash
 python main.py
 ``` 
-Assuming our application is running on `http://127.0.0.1:5000` (should be visible in the output of the above command) and your webhook endpoint lives at `/webhook` (which is the case in this example), we can run 
-```
+
+Assuming the application runs at `http://127.0.0.1:5000` (check the output of the command above) and your webhook endpoint is `/webhook`, you can forward requests locally using:
+
+```bash
 svix listen http://127.0.0.1:5000/webhook
 ```
-From the output of this command, we can find a webhook URL that will redirect any callbacks to our local machine.
 
-![Forward](/img/svix_forward.png)
+The CLI output provides a webhook URL that redirects callbacks to your local machine.
 
-In the "Add Endpoint" screen that we navigated to earlier, we can now fill in the relay URL and select the event types that we will be listening to (in this case the `cluster.optimized` endpoint for warehouse "Example", `cluster.optimized.Example.673f48095739843f4de65ec9`).
+![Forwarding Example](/img/svix_forward.png)
 
-![Forward](/img/svix_endpoint_create.png)
+Enter this relay URL in the "Add Endpoint" screen, then select the event types you wish to listen for (e.g., `cluster.optimized` for the "Example" warehouse: `cluster.optimized.Example.673f48095739843f4de65ec9`).
 
-After creating the endpoint, we can reveal the signing secret used to verify that this call actually originates from our servers. The variable `secret` in `main.py` should be equal to this text (don't forget to restart your Flask app after any changes).
+![Create Endpoint](/img/svix_endpoint_create.png)
 
-![Forward](/img/signing_secret.png)
+After creating the endpoint, reveal the signing secret to verify calls from our servers. Set the variable `secret` in `main.py` to match this value (and restart the Flask app after any changes).
 
-## Setting up the REST API
-Your app is now ready to receive events that contain a unique optimization IDs. To reveal a finished optimization's outcome, we need to use this ID and a secret API key to query the [OptiPick API](https://docs.optioryx.com).
+![Signing Secret](/img/signing_secret.png)
 
-To create an API key, you will again need to navigate to the **Settings** page in the [webapp](https://optipick.optioryx.com/settings) and look for the "API Keys" button. The variable `api_key` in `main.py` should be set to your API key (don't forget to restart your Flask app after any changes).
+## Setting Up the REST API
+
+Your app is now ready to receive events containing unique optimization IDs. To fetch a completed optimization's outcome, use this ID and a secret API key to query the [OptiPick API](https://docs.optioryx.com).
+
+To create an API key:
+
+1. Go to the **Settings** page in the [web application](https://optipick.optioryx.com/settings).
+2. Click on "API Keys."
+3. Generate a new API key.
+
+Set the variable `api_key` in `main.py` to your API key (restart the Flask app after any changes).
 
 ![](/img/api-key-in-settings.png)
 ![](/img/new-api-key.png)
 
-## Trying it out
-Once `main.py` contains all necessary tokens, you're ready to receive events! Try to submit the default example clustering request for the "Example" warehouse from our [API docs](https://docs.optioryx.com) page, with your API key filled in and `synchronous` set to false. After a few seconds, you should see the optimizion's results printed in your Flask console. 
-![](/img/docs-page.png)
+## Trying It Out
 
-On the webhook dashboard page for your endpoint, you should also see a log of requests. This allows for manual replay ([although requests are also retried automatically at various time intervals](https://docs.optioryx.com/optipick-webhooks)). To test this out, you could try to intentionally add a fatal error to your endpoint in `main.py`, start an optimization, fix the error and click replay in the dashboard. The event system will only mark an event as handled if your endpoint responds with a `20X` response code.
+Once `main.py` contains all the necessary tokens, your app is ready to receive events! Submit the default clustering request for the "Example" warehouse from our [API docs](https://docs.optioryx.com), ensuring your API key is filled in and `synchronous` is set to `false`. After a few seconds, the optimization results should appear in your Flask console.
+
+![](/img/docs-page.png)
+![](/img/console-input.png)
+
+The webhook dashboard for your endpoint also logs incoming requests. You can replay these manually ([requests are also retried automatically at various intervals](https://docs.optioryx.com/optipick-webhooks)). To test this, introduce an intentional fatal error in `main.py`, start an optimization, fix the error, and replay the event via the dashboard. The system marks an event as handled only if your endpoint responds with a `20X` status code.
 
 ![](/img/replay.png)

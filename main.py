@@ -15,9 +15,9 @@ def hook():
     wh = Webhook(secret)
     payload = wh.verify(payload, headers)
 
-    for id in payload["item_ids"]:
-        res = requests.get(f"{api_url}/optimize/cluster/{id}", headers={"X-API-KEY": api_key})
-        print(id, res.json())
+    id = payload["request_id"]
+    res = requests.get(f"{api_url}/optimize/cluster/{id}", headers={"X-API-KEY": api_key})
+    print(id, res.json())
 
     return "OK"
 
