@@ -84,7 +84,7 @@ Once `main.py` contains all the necessary tokens, your app is ready to receive e
 
 
 ## Retries
-Svix attempts to deliver each webhook message based on a retry schedule with exponential backoff. To test out retries, introduce an intentional fatal error in `main.py`, start an optimization, fix the error, and replay the event via the dashboard. The system marks an event as handled only if your endpoint responds with a `20X` status code.
+Svix attempts to deliver each webhook message based on a retry schedule with exponential backoff.
 
 ### The schedule
 Each message is attempted based on the following schedule, where each period is started following the failure of the preceding attempt:
@@ -103,7 +103,7 @@ If an endpoint is removed or disabled delivery attempts to the endpoint will be 
 For example, an attempt that fails three times before eventually succeeding will be delivered roughly 35 minutes and 5 seconds following the first attempt.
 
 ### Manual retries
-You can also use the application portal to manually retry each message at any time, or automatically retry ("Recover") all failed messages starting from a given date.
+You can also use the application portal to manually retry each message at any time, or automatically retry ("Recover") all failed messages starting from a given date. To test out manual retries, introduce an intentional fatal error in `main.py`, start an optimization, fix the error, and replay the event via the dashboard. The system marks an event as handled only if your endpoint responds with a `20X` status code.
 
 ## Troubleshooting Tips
 There are some common reasons why your webhook endpoint is failing:
