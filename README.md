@@ -6,6 +6,10 @@
 
 Webhooks allow services to notify each other of events. At their core, they are simply `POST` requests sent to a pre-determined endpoint. You can define your own endpoints in our web application and configure different endpoints for various combinations of *event types*. 
 
+<br/><br/><p align="center">
+  <img src="img/sequence.png" style="max-width: 550px"/>
+</p><br/><br/>
+
 OptiPick supports the following event types:
 
 - **`route.optimized`**: Triggered when a request to our routing API completes for **any** of your operational warehouses.
