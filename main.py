@@ -5,7 +5,7 @@ from svix.webhooks import Webhook
 app = Flask(__name__)
 secret = "<WEBHOOK SIGNING SECRET>"
 api_key = "<API KEY>"
-api_url = "https://optipick.api.optioryx.com/latest"
+api_url = "https://optipick.api.optioryx.com/"
 
 @app.route('/webhook', methods=['POST'])
 def hook():
